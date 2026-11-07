@@ -1,0 +1,13 @@
+{
+  "name": "campuskart",
+  "private": true,
+  "version": "1.0.0",
+  "description": "CampusKart student marketplace",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "dev": "npx concurrently -n api,web -c blue,magenta \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "test": "npm test --prefix backend",
+    "seed": "npm run seed --prefix backend",
+    "start": "npm start --prefix backend"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "info": {
+    "name": "CampusKart",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base}}/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Asha Menon\",\n  \"email\": \"asha@campuskart.edu\",\n  \"password\": \"Student@123\",\n  \"college\": \"National Institute of Technology\",\n  \"department\": \"Computer Science\",\n  \"year\": \"3\"\n}" }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base}}/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"aisha@campuskart.edu\",\n  \"password\": \"Student@123\"\n}" }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base}}/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Marketplace",
+      "item": [
+        { "name": "List products", "request": { "method": "GET", "url": "{{base}}/products?sort=newest" } },
+        { "name": "Deals", "request": { "method": "GET", "url": "{{base}}/products/deals" } },
+        { "name": "Auctions", "request": { "method": "GET", "url": "{{base}}/auctions?status=active" } },
+        { "name": "Services", "request": { "method": "GET", "url": "{{base}}/services" } },
+        { "name": "Admin stats", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base}}/admin/stats" } }
+      ]
+    }
+  ]
+}
