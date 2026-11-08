@@ -28,39 +28,56 @@ async function seed() {
   await connectDB()
   await mongoose.connection.dropDatabase()
 
+  const college = 'Indian Institute of Information Technology Allahabad'
   const admin = await user({
-    name: 'Campus Admin',
-    email: 'admin@campuskart.edu',
+    name: 'Tarang',
+    email: 'tarang@iiita.ac.in',
     role: 'admin',
-    college: 'CampusKart',
+    college,
+    department: 'Student Affairs',
+    year: '4',
+  })
+  await user({
+    name: 'Dhairya',
+    email: 'dhairya@iiita.ac.in',
+    role: 'admin',
+    college,
+    department: 'Student Affairs',
+    year: '4',
+  })
+  await user({
+    name: 'Lakshya',
+    email: 'lakshya@iiita.ac.in',
+    role: 'admin',
+    college,
     department: 'Student Affairs',
     year: '4',
   })
   const aisha = await user({
     name: 'Aisha Rahman',
-    email: 'aisha@campuskart.edu',
-    college: 'National Institute of Technology',
+    email: 'iit2024001@iiita.ac.in',
+    college,
     department: 'Computer Science',
     year: '3',
   })
   const rohan = await user({
     name: 'Rohan Iyer',
-    email: 'rohan@campuskart.edu',
-    college: 'National Institute of Technology',
+    email: 'iib2023012@iiita.ac.in',
+    college,
     department: 'Electronics',
     year: '2',
   })
   const meera = await user({
     name: 'Meera Shah',
-    email: 'meera@campuskart.edu',
-    college: 'National Institute of Technology',
+    email: 'ice2022110@iiita.ac.in',
+    college,
     department: 'Design',
     year: '4',
   })
   await user({
     name: 'Kabir Sen',
-    email: 'kabir@campuskart.edu',
-    college: 'National Institute of Technology',
+    email: 'msb2025101@iiita.ac.in',
+    college,
     department: 'Mechanical',
     year: '1',
     isVerified: false,
@@ -211,9 +228,9 @@ async function seed() {
   })
 
   console.log('Seeded CampusKart.')
-  console.log('Admin   admin@campuskart.edu  / Admin@123')
-  console.log(`Students aisha, rohan, meera @campuskart.edu / ${password}`)
-  console.log('Unverified student kabir@campuskart.edu / ' + password)
+  console.log('Admins  tarang@iiita.ac.in, dhairya@iiita.ac.in, lakshya@iiita.ac.in / Admin@123')
+  console.log('Students iit2024001, iib2023012, ice2022110 @iiita.ac.in / ' + password)
+  console.log('Unverified student msb2025101@iiita.ac.in / ' + password)
   console.log('Demo ids:', { admin: admin._id.toString(), textbook: textbook._id.toString(), lamp: lamp._id.toString() })
   await mongoose.disconnect()
 }

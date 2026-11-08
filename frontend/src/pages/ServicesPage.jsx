@@ -11,15 +11,30 @@ export default function ServicesPage() {
   const [data, setData] = useState([])
   const [category, setCategory] = useState('')
   const [search, setSearch] = useState('')
-  const [loading, setLoading] = useState(true)
+  const [committedSearch, setCommittedSearch] = useState('')
+  const [ready, setReady] = useState(false)
+  const [pending, setPending] = useState(false)
 
   useEffect(() => {
+    const handle = window.setTimeout(() => setCommittedSearch(search), 350)
+    return () => window.clearTimeout(handle)
+  }, [search])
+
+  useEffect(() => {
+    let active = true
     const params = new URLSearchParams()
     if (category) params.set('category', category)
-    if (search) params.set('search', search)
-    setLoading(true)
-    api(`/api/services?${params.toString()}`).then((res) => setData(res.data)).finally(() => setLoading(false))
-  }, [category, search])
+    if (committedSearch) params.set('search', committedSearch)
+    setPending(true)
+    api(`/api/services?${params.toString()}`)
+      .then((res) => { if (active) setData(res.data) })
+      .finally(() => {
+        if (!active) return
+        setReady(true)
+        setPending(false)
+      })
+    return () => { active = false }
+  }, [category, committedSearch])
 
   return (
     <div>
@@ -36,8 +51,8 @@ export default function ServicesPage() {
           {SERVICE_CATEGORIES.map((item) => <option key={item}>{item}</option>)}
         </select>
       </div>
-      {loading ? <SkeletonGrid /> : data.length === 0 ? <EmptyState title="No services yet" body="Verified students can offer tutoring and creative help." /> : (
-        <div className="grid gap-4 md:grid-cols-2">{data.map((service) => <ServiceCard key={service._id} service={service} />)}</div>
+      {!ready ? <SkeletonGrid /> : data.length === 0 ? <EmptyState title="No services yet" body="Verified students can offer tutoring and creative help." /> : (
+        <div className={`grid gap-4 md:grid-cols-2 ${pending ? 'opacity-70' : ''}`} aria-busy={pending}>{data.map((service) => <ServiceCard key={service._id} service={service} />)}</div>
       )}
     </div>
   )

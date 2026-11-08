@@ -17,7 +17,7 @@ function sortOption(sort) {
 }
 
 function buildFilter(query) {
-  const filter = { status: { $ne: 'removed' } }
+  const filter = { status: { $nin: ['removed', 'pending'] } }
   const and = []
   if (query.availability) filter.status = query.availability
   if (query.category) filter.category = query.category
@@ -98,6 +98,8 @@ const getOne = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id).populate('seller', SELLER_PUBLIC_FIELDS)
   if (!product || product.status === 'removed') throw new ApiError('Product not found', 404)
   const sellerId = product.seller._id || product.seller
+  const canSeePending = req.user && (String(req.user._id) === String(sellerId) || req.user.role === 'admin')
+  if (product.status === 'pending' && !canSeePending) throw new ApiError('Product not found', 404)
   if (req.user && String(req.user._id) !== String(sellerId)) {
     await Product.findByIdAndUpdate(product._id, { $inc: { viewCount: 1 } })
     await User.updateOne({ _id: req.user._id }, { $pull: { recentlyViewed: { product: product._id } } })
@@ -124,9 +126,15 @@ const create = asyncHandler(async (req, res) => {
     discountPercent: req.body.discountPercent || 0,
     isUrgent: Boolean(req.body.isUrgent),
     isExchangeEligible: Boolean(req.body.isExchangeEligible),
+    status: 'pending',
   })
   const populated = await product.populate('seller', SELLER_PUBLIC_FIELDS)
-  res.status(201).json({ success: true, message: 'Listing published', data: populated, suggestion })
+  res.status(201).json({
+    success: true,
+    message: 'Listing submitted. An admin must approve this sale or trade before other students can see it.',
+    data: populated,
+    suggestion,
+  })
 })
 
 const update = asyncHandler(async (req, res) => {

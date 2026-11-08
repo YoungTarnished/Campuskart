@@ -19,6 +19,7 @@ export default function ProductFormPage() {
   const [form, setForm] = useState(empty)
   const [suggestion, setSuggestion] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     if (!editing) return
@@ -50,15 +51,26 @@ export default function ProductFormPage() {
   }
 
   async function onFiles(event) {
-    const files = [...event.target.files].slice(0, 5)
+    const files = [...event.target.files].slice(0, 5 - form.images.length)
+    event.target.value = ''
+    if (!files.length) return
+    setUploading(true)
     try {
       const urls = await uploadImages(files)
       set('images', [...form.images, ...urls].slice(0, 5))
-    } catch (err) { toast(err.message, 'error') }
+    } catch (err) { toast(err.message, 'error') } finally { setUploading(false) }
+  }
+
+  function removePhoto(url) {
+    set('images', form.images.filter((image) => image !== url))
   }
 
   async function onSubmit(event) {
     event.preventDefault()
+    if (!form.images.length) {
+      toast('Add at least one photo of the item.', 'error')
+      return
+    }
     setBusy(true)
     const body = { ...form, price: Number(form.price), discountPercent: Number(form.discountPercent) || 0 }
     try {
@@ -70,7 +82,7 @@ export default function ProductFormPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <PageHeader title={editing ? 'Edit listing' : 'New listing'} subtitle="The price a buyer pays is the price you enter. Discount and urgent flags power Campus Deals." />
+      <PageHeader title={editing ? 'Edit listing' : 'Sell or trade'} subtitle="Add photos, then submit. An admin approves the listing before other students can see it." />
       <form className="card space-y-4 p-5" onSubmit={onSubmit}>
         <Field label="Title"><input className="field" required value={form.title} onChange={(e) => set('title', e.target.value)} /></Field>
         <Field label="Description"><textarea className="field min-h-28" required value={form.description} onChange={(e) => set('description', e.target.value)} /></Field>
@@ -85,9 +97,23 @@ export default function ProductFormPage() {
         {suggestion && <p className="rounded-2xl bg-indigo-50 p-3 text-sm text-indigo-950">{suggestion.explanation} {suggestion.suggestedPrice ? `Suggested ${money(suggestion.suggestedPrice)}.` : ''}</p>}
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.isExchangeEligible} onChange={(e) => set('isExchangeEligible', e.target.checked)} /> Open to exchange</label>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.isUrgent} onChange={(e) => set('isUrgent', e.target.checked)} /> Urgent sale</label>
-        <Field label="Images"><input className="field" type="file" accept="image/png,image/jpeg,image/webp" multiple onChange={onFiles} /></Field>
-        <div className="flex gap-2">{form.images.map((image) => <img key={image} src={image} alt="" className="h-16 w-16 rounded-xl object-cover" />)}</div>
-        <button className="btn-primary" disabled={busy} type="submit">{busy ? 'Saving...' : editing ? 'Save changes' : 'Publish listing'}</button>
+        <fieldset className="rounded-2xl border border-dashed border-indigo-200 bg-indigo-50/60 p-4">
+          <legend className="px-1 text-sm font-semibold text-indigo-950">Photos of the item</legend>
+          <p className="text-sm text-slate-600">Add up to 5 photos so buyers can see the condition. JPEG, PNG, or WEBP.</p>
+          <label className="btn-secondary mt-3 inline-flex cursor-pointer">
+            {uploading ? 'Uploading photos...' : 'Add photos'}
+            <input className="sr-only" type="file" accept="image/png,image/jpeg,image/webp" multiple disabled={uploading || form.images.length >= 5} onChange={onFiles} />
+          </label>
+          <div className="mt-3 flex flex-wrap gap-3">
+            {form.images.map((image) => (
+              <div key={image} className="relative">
+                <img src={image} alt="" className="h-24 w-24 rounded-xl object-cover" />
+                <button className="absolute -right-2 -top-2 rounded-full bg-white px-2 py-0.5 text-xs font-bold shadow" type="button" onClick={() => removePhoto(image)}>Remove</button>
+              </div>
+            ))}
+          </div>
+        </fieldset>
+        <button className="btn-primary" disabled={busy || uploading} type="submit">{busy ? 'Saving...' : editing ? 'Save changes' : 'Submit for approval'}</button>
       </form>
     </div>
   )

@@ -15,7 +15,9 @@ const { SELLER_PUBLIC_FIELDS } = require('../constants')
 const publicProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id)
   if (!user || user.isSuspended) throw new ApiError('Student not found', 404)
-  const listings = await Product.find({ seller: user._id, status: { $ne: 'removed' } })
+  const ownerView = req.user && String(req.user._id) === String(user._id)
+  const hidden = ownerView ? ['removed'] : ['removed', 'pending']
+  const listings = await Product.find({ seller: user._id, status: { $nin: hidden } })
     .sort({ createdAt: -1 })
     .limit(12)
   res.json({ success: true, data: { user: presentUser(user), listings } })

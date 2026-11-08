@@ -1,4 +1,5 @@
-const { app, request, createVerifiedUser, auth, createProduct } = require('./helpers')
+const { app, request, createVerifiedUser, auth, createProduct, productPayload } = require('./helpers')
+const User = require('../src/models/User')
 
 describe('products', () => {
   test('creates, searches, filters, sorts, and blocks edits by someone else', async () => {
@@ -80,5 +81,37 @@ describe('products', () => {
       images: product.images,
     })
     expect(edit.status).toBe(400)
+  })
+
+  test('a new sale or trade stays hidden until an admin approves or removes it', async () => {
+    const seller = await createVerifiedUser()
+    const buyer = await createVerifiedUser()
+    const adminUser = await createVerifiedUser()
+    await User.findByIdAndUpdate(adminUser.user._id, { role: 'admin' })
+
+    const created = await request(app).post('/api/products').set(auth(seller.token)).send(productPayload({ title: 'Cycle for trade' }))
+    expect(created.status).toBe(201)
+    expect(created.body.data.status).toBe('pending')
+
+    const hidden = await request(app).get('/api/products').query({ search: 'Cycle for trade' })
+    expect(hidden.body.data).toHaveLength(0)
+    const stranger = await request(app).get(`/api/products/${created.body.data._id}`).set(auth(buyer.token))
+    expect(stranger.status).toBe(404)
+    const purchase = await request(app).post('/api/orders').set(auth(buyer.token)).send({ productId: created.body.data._id })
+    expect(purchase.status).toBe(409)
+
+    const denied = await request(app).patch(`/api/admin/products/${created.body.data._id}/approve`).set(auth(seller.token))
+    expect(denied.status).toBe(403)
+    const approved = await request(app).patch(`/api/admin/products/${created.body.data._id}/approve`).set(auth(adminUser.token))
+    expect(approved.status).toBe(200)
+    expect(approved.body.data.status).toBe('available')
+
+    const visible = await request(app).get('/api/products').query({ search: 'Cycle for trade' })
+    expect(visible.body.data).toHaveLength(1)
+
+    const removed = await request(app).patch(`/api/admin/products/${created.body.data._id}/remove`).set(auth(adminUser.token))
+    expect(removed.status).toBe(200)
+    const gone = await request(app).get('/api/products').query({ search: 'Cycle for trade' })
+    expect(gone.body.data).toHaveLength(0)
   })
 })

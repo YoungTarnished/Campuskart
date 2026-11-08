@@ -23,14 +23,13 @@ const objectId = z.string().regex(/^[a-f\d]{24}$/i, 'Invalid identifier')
 const imageList = z.array(z.string().refine(isAllowedImageUrl, 'Images must be uploaded to CampusKart')).max(5)
 
 const collegeEmail = z.string().trim().toLowerCase().email('Enter a valid email address')
-  .refine(isCollegeEmail, 'Use your college email address (.edu, .ac.in, .edu.in, or .ac.uk).')
+  .refine(isCollegeEmail, 'Use an IIITA roll email such as iit2024123@iiita.ac.in. The prefix must be iit, iib, ice, or msb, followed by 202, one year digit, and three roll digits.')
 
 const registerSchema = z.object({
   body: z.object({
     name: z.string().trim().min(2, 'Name must be at least 2 characters').max(80),
     email: collegeEmail,
     password: passwordSchema,
-    college: z.string().trim().min(2, 'College is required').max(120),
     department: z.string().trim().min(2, 'Department is required').max(80),
     year: z.enum(YEARS, { errorMap: () => ({ message: 'Choose a year from 1 to 5' }) }),
   }),
@@ -71,7 +70,6 @@ const resetSchema = z.object({
 const profileSchema = z.object({
   body: z.object({
     name: z.string().trim().min(2).max(80).optional(),
-    college: z.string().trim().min(2).max(120).optional(),
     department: z.string().trim().min(2).max(80).optional(),
     year: z.enum(YEARS).optional(),
     profilePicture: z.string().refine((value) => value === '' || isAllowedImageUrl(value), 'Upload a profile picture first').optional(),

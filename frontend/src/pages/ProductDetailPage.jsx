@@ -103,6 +103,9 @@ export default function ProductDetailPage() {
           <TrustLine person={seller} />
           <p className="mt-1 text-sm"><Stars value={seller?.ratingAverage} /> {seller?.ratingAverage || 0} average</p>
         </Link>
+        {isOwner && product.status === 'pending' && (
+          <p className="rounded-2xl bg-amber-50 p-3 text-sm text-amber-950">Waiting for an admin to approve this sale or trade. Other students cannot see it yet.</p>
+        )}
         {isOwner ? (
           <div className="flex gap-2">
             <Link className="btn-primary" to={`/products/${product._id}/edit`}>Edit</Link>

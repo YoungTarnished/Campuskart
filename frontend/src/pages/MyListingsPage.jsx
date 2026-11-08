@@ -19,7 +19,12 @@ export default function MyListingsPage() {
     <div className="space-y-8">
       <PageHeader title="My listings" action={user?.isVerified ? <Link className="btn-primary" to="/products/new">Add product</Link> : null} />
       {products.length === 0 ? <EmptyState title="No products yet" body="Verified students can publish books, hostel gear, and more." /> : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{products.map((product) => <ProductCard key={product._id} product={product} />)}</div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{products.map((product) => (
+          <div key={product._id}>
+            <ProductCard product={product} />
+            {product.status === 'pending' && <p className="mt-1 text-xs font-semibold text-amber-700">Waiting for admin approval</p>}
+          </div>
+        ))}</div>
       )}
       <h2 className="text-xl font-bold">My services</h2>
       <div className="grid gap-3">

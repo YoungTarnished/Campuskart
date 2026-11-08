@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { Field } from '../components/ui'
 
-const empty = { name: '', email: '', password: '', college: '', department: '', year: '1' }
+const empty = { name: '', email: '', password: '', department: '', year: '1' }
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -36,13 +36,12 @@ export default function RegisterPage() {
     <div className="mx-auto max-w-lg">
       <div className="card p-6">
         <h1 className="text-2xl font-extrabold">Create your student account</h1>
-        <p className="mt-1 text-sm text-slate-600">Use a college address ending in .edu, .ac.in, .edu.in, or .ac.uk.</p>
+        <p className="mt-1 text-sm text-slate-600">Use your IIITA roll email, such as iit2024123@iiita.ac.in. The prefix is iit, iib, ice, or msb, then 202, a year digit, and three roll digits.</p>
         <form className="mt-6 grid gap-4" onSubmit={onSubmit}>
           <Field label="Full name"><input className="field" required value={form.name} onChange={set('name')} /></Field>
           <Field label="College email"><input className="field" type="email" required value={form.email} onChange={set('email')} /></Field>
           <Field label="Password"><input className="field" type="password" required value={form.password} onChange={set('password')} /></Field>
-          <p className="text-xs text-slate-500">At least 8 characters with an uppercase letter, a lowercase letter, and a number.</p>
-          <Field label="College"><input className="field" required value={form.college} onChange={set('college')} /></Field>
+          <p className="text-xs text-slate-500">At least 8 characters with an uppercase letter, a lowercase letter, and a number. Your college is IIIT Allahabad.</p>
           <Field label="Department"><input className="field" required value={form.department} onChange={set('department')} /></Field>
           <Field label="Year">
             <select className="field" value={form.year} onChange={set('year')}>{YEARS.map((year) => <option key={year} value={year}>Year {year}</option>)}</select>

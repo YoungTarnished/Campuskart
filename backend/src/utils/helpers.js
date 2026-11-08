@@ -1,4 +1,5 @@
 const ApiError = require('./ApiError')
+const { ADMIN_EMAILS, STUDENT_EMAIL_PATTERN } = require('../constants')
 
 function pageQuery(query) {
   const page = Math.max(1, Number(query.page) || 1)
@@ -18,21 +19,20 @@ function roundMoney(value) {
   return Math.round(Number(value) * 100) / 100
 }
 
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase()
+}
+
+function isStudentEmail(email) {
+  return STUDENT_EMAIL_PATTERN.test(normalizeEmail(email))
+}
+
+function isAdminEmail(email) {
+  return ADMIN_EMAILS.includes(normalizeEmail(email))
+}
+
 function isCollegeEmail(email) {
-  if (typeof email !== 'string' || !email.includes('@')) return false
-  const domain = email.split('@')[1].toLowerCase()
-  const extras = (process.env.EXTRA_EMAIL_DOMAINS || '')
-    .split(',')
-    .map((item) => item.trim().toLowerCase())
-    .filter(Boolean)
-  if (extras.includes(domain)) return true
-  return (
-    domain.endsWith('.edu') ||
-    domain.endsWith('.edu.in') ||
-    domain.endsWith('.ac.in') ||
-    domain.endsWith('.ac.uk') ||
-    domain === 'campuskart.test'
-  )
+  return isStudentEmail(email) || isAdminEmail(email)
 }
 
 function presentUser(user, { includePrivate = false } = {}) {
@@ -80,6 +80,8 @@ module.exports = {
   escapeRegex,
   roundMoney,
   isCollegeEmail,
+  isStudentEmail,
+  isAdminEmail,
   presentUser,
   assertOwner,
   isAllowedImageUrl,

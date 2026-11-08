@@ -17,7 +17,7 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{base}}/auth/register",
-            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Asha Menon\",\n  \"email\": \"asha@campuskart.edu\",\n  \"password\": \"Student@123\",\n  \"college\": \"National Institute of Technology\",\n  \"department\": \"Computer Science\",\n  \"year\": \"3\"\n}" }
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Asha Menon\",\n  \"email\": \"iit2024123@iiita.ac.in\",\n  \"password\": \"Student@123\",\n  \"college\": \"National Institute of Technology\",\n  \"department\": \"Computer Science\",\n  \"year\": \"3\"\n}" }
           }
         },
         {
@@ -26,7 +26,7 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{base}}/auth/login",
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"aisha@campuskart.edu\",\n  \"password\": \"Student@123\"\n}" }
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"iit2024001@iiita.ac.in\",\n  \"password\": \"Student@123\"\n}" }
           }
         },
         {

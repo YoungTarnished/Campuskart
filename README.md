@@ -67,11 +67,13 @@ From the repo root, `npm run dev` starts both after dependencies are installed. 
 
 | Email | Password | Notes |
 | --- | --- | --- |
-| admin@campuskart.edu | Admin@123 | Admin |
-| aisha@campuskart.edu | Student@123 | Verified seller with a rating |
-| rohan@campuskart.edu | Student@123 | Verified student |
-| meera@campuskart.edu | Student@123 | Verified, offers tutoring |
-| kabir@campuskart.edu | Student@123 | Registered but not verified |
+| tarang@iiita.ac.in | Admin@123 | Admin |
+| dhairya@iiita.ac.in | Admin@123 | Admin |
+| lakshya@iiita.ac.in | Admin@123 | Admin |
+| iit2024001@iiita.ac.in | Student@123 | Verified seller with a rating |
+| iib2023012@iiita.ac.in | Student@123 | Verified student |
+| ice2022110@iiita.ac.in | Student@123 | Verified, offers tutoring |
+| msb2025101@iiita.ac.in | Student@123 | Registered but not verified |
 
 Seed deletes the current `campuskart` database and writes these accounts again.
 
@@ -79,7 +81,7 @@ Seed deletes the current `campuskart` database and writes these accounts again.
 
 There is no mail server in local development. Registration, resend, and forgot-password responses include a block labelled **LOCAL DEMO ONLY** with a token and a path such as `/verify-email?token=...`. That block is omitted when `NODE_ENV=production`. Do not enable it on a public server. A real deployment should send the token by email and leave `DEMO_VERIFICATION` unset.
 
-College emails must end in `.edu`, `.edu.in`, `.ac.in`, or `.ac.uk`. Add more domains with `EXTRA_EMAIL_DOMAINS` in `backend/.env`.
+Student registration accepts only IIITA roll emails: `iit`, `iib`, `ice`, or `msb`, then `202`, one year digit, and three roll digits, at `iiita.ac.in`. An example is `iit2024123@iiita.ac.in`. The addresses `tarang@iiita.ac.in`, `dhairya@iiita.ac.in`, and `lakshya@iiita.ac.in` are administrator accounts and cannot be registered as students.
 
 ## Images
 

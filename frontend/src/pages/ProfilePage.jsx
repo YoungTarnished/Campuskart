@@ -32,7 +32,7 @@ export default function ProfilePage() {
     event.preventDefault()
     try {
       const res = await api('/api/auth/profile', { method: 'PUT', body: {
-        name: form.name, college: form.college, department: form.department, year: form.year, profilePicture: form.profilePicture || '',
+        name: form.name, department: form.department, year: form.year, profilePicture: form.profilePicture || '',
       } })
       setSession(res.data, localStorage.getItem('campuskart_token'))
       await refresh()
@@ -51,7 +51,7 @@ export default function ProfilePage() {
         {own && form && (
           <form className="space-y-3" onSubmit={save}>
             <input className="field" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-            <input className="field" value={form.college} onChange={(e) => setForm({ ...form, college: e.target.value })} />
+            <p className="text-sm text-slate-600">College: Indian Institute of Information Technology Allahabad</p>
             <input className="field" value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} />
             <select className="field" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })}>{YEARS.map((year) => <option key={year} value={year}>Year {year}</option>)}</select>
             <input className="field" type="file" accept="image/png,image/jpeg,image/webp" onChange={async (event) => {

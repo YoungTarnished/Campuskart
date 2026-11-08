@@ -9,12 +9,14 @@ export default function AdminPage() {
   const [users, setUsers] = useState([])
   const [reports, setReports] = useState([])
   const [disputes, setDisputes] = useState([])
+  const [listings, setListings] = useState([])
 
   function load() {
     api('/api/admin/stats').then((res) => setStats(res.data))
     api('/api/admin/users?limit=20').then((res) => setUsers(res.data))
     api('/api/admin/reports').then((res) => setReports(res.data))
     api('/api/admin/disputes').then((res) => setDisputes(res.data))
+    api('/api/admin/products').then((res) => setListings(res.data))
   }
   useEffect(() => { load() }, [])
 
@@ -62,6 +64,28 @@ export default function AdminPage() {
             ))}
           </tbody>
         </table>
+      </section>
+      <section className="space-y-2">
+        <h2 className="text-xl font-bold">Sales and trades</h2>
+        <p className="text-sm text-slate-600">Approve a listing so students can buy or trade it, or remove it from the campus.</p>
+        {listings.length === 0 && <p className="text-sm text-slate-500">No listings waiting or live.</p>}
+        {listings.map((product) => (
+          <article key={product._id} className="card flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
+            <div className="flex items-center gap-3">
+              {product.images?.[0] && <img src={product.images[0]} alt="" className="h-14 w-14 rounded-xl object-cover" />}
+              <div>
+                <p className="font-semibold">{product.title}</p>
+                <p className="text-slate-500">{product.seller?.name} · {product.isExchangeEligible ? 'Trade or sell' : 'Sell'} · {product.status}</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              {product.status === 'pending' && (
+                <button className="btn-primary" type="button" onClick={() => run(`/api/admin/products/${product._id}/approve`, 'PATCH')}>Approve</button>
+              )}
+              <button className="btn-danger" type="button" onClick={() => run(`/api/admin/products/${product._id}/remove`, 'PATCH')}>Remove</button>
+            </div>
+          </article>
+        ))}
       </section>
       <section className="space-y-2">
         <h2 className="text-xl font-bold">Reports</h2>

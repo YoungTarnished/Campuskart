@@ -3,7 +3,8 @@ const User = require('../models/User')
 const env = require('../config/env')
 const asyncHandler = require('../utils/asyncHandler')
 const ApiError = require('../utils/ApiError')
-const { presentUser } = require('../utils/helpers')
+const { presentUser, isAdminEmail } = require('../utils/helpers')
+const { COLLEGE_NAME } = require('../constants')
 const { signToken, createRawToken, hashToken, demoLink } = require('../utils/tokens')
 
 async function issueVerification(user) {
@@ -15,7 +16,10 @@ async function issueVerification(user) {
 }
 
 const register = asyncHandler(async (req, res) => {
-  const { name, email, password, college, department, year } = req.body
+  const { name, email, password, department, year } = req.body
+  if (isAdminEmail(email)) {
+    throw new ApiError('This email is reserved for an administrator. Sign in with the admin account instead of registering.', 403)
+  }
   const existing = await User.findOne({ email })
   if (existing) throw new ApiError('An account with this email already exists', 409)
 
@@ -23,7 +27,7 @@ const register = asyncHandler(async (req, res) => {
     name,
     email,
     password: await bcrypt.hash(password, env.bcryptRounds),
-    college,
+    college: COLLEGE_NAME,
     department,
     year,
     role: 'student',
@@ -121,7 +125,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 })
 
 const updateProfile = asyncHandler(async (req, res) => {
-  const fields = ['name', 'college', 'department', 'year', 'profilePicture']
+  const fields = ['name', 'department', 'year', 'profilePicture']
   for (const field of fields) {
     if (req.body[field] !== undefined) req.user[field] = req.body[field]
   }

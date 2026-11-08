@@ -4,7 +4,7 @@ const { app, request, createVerifiedUser, auth } = require('./helpers')
 describe('authentication', () => {
   const valid = {
     name: 'Asha Menon',
-    email: 'asha@campuskart.edu',
+    email: 'iit2024123@iiita.ac.in',
     password: 'Student@123',
     college: 'National Institute of Technology',
     department: 'Computer Science',
@@ -21,7 +21,16 @@ describe('authentication', () => {
 
     const gmail = await request(app).post('/api/auth/register').send({ ...valid, email: 'asha@gmail.com' })
     expect(gmail.status).toBe(400)
-    expect(gmail.body.message).toMatch(/college email/i)
+    expect(gmail.body.message).toMatch(/IIITA roll email/i)
+
+    const wrongPrefix = await request(app).post('/api/auth/register').send({ ...valid, email: 'ece2024123@iiita.ac.in' })
+    expect(wrongPrefix.status).toBe(400)
+
+    const shortRoll = await request(app).post('/api/auth/register').send({ ...valid, email: 'iit202412@iiita.ac.in' })
+    expect(shortRoll.status).toBe(400)
+
+    const reserved = await request(app).post('/api/auth/register').send({ ...valid, email: 'tarang@iiita.ac.in' })
+    expect(reserved.status).toBe(403)
   })
 
   test('registers, verifies with the demo token, logs in, and ignores a client role', async () => {
@@ -58,8 +67,8 @@ describe('authentication', () => {
   })
 
   test('forgot and reset password invalidates the old session', async () => {
-    const student = await createVerifiedUser({ email: 'reset@campuskart.edu' })
-    const forgot = await request(app).post('/api/auth/forgot-password').send({ email: 'reset@campuskart.edu' })
+    const student = await createVerifiedUser()
+    const forgot = await request(app).post('/api/auth/forgot-password').send({ email: student.email })
     expect(forgot.status).toBe(200)
     expect(forgot.body.data.demoReset.label).toMatch(/LOCAL DEMO ONLY/)
 
@@ -70,7 +79,7 @@ describe('authentication', () => {
     expect(reset.status).toBe(200)
     const oldSession = await request(app).get('/api/auth/me').set(auth(student.token))
     expect(oldSession.status).toBe(401)
-    const login = await request(app).post('/api/auth/login').send({ email: 'reset@campuskart.edu', password: 'NewPass@123' })
+    const login = await request(app).post('/api/auth/login').send({ email: student.email, password: 'NewPass@123' })
     expect(login.status).toBe(200)
   })
 

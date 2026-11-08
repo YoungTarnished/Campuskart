@@ -23,7 +23,8 @@ const SERVICE_CATEGORIES = [
   'Photography',
 ]
 
-const PRODUCT_STATUSES = ['available', 'reserved', 'sold', 'removed', 'exchanged']
+const PRODUCT_STATUSES = ['pending', 'available', 'reserved', 'sold', 'removed', 'exchanged']
+const COLLEGE_NAME = 'Indian Institute of Information Technology Allahabad'
 const ORDER_STATUSES = ['pending', 'accepted', 'rejected', 'completed', 'cancelled', 'disputed']
 const AUCTION_STATUSES = ['scheduled', 'active', 'closing', 'sold', 'unsold', 'cancelled']
 const SERVICE_REQUEST_STATUSES = ['pending', 'accepted', 'rejected', 'cancelled', 'completed', 'disputed']
@@ -51,6 +52,15 @@ const DISPUTE_REASONS = [
 const REPORT_TARGETS = ['product', 'auction', 'service', 'user']
 const YEARS = ['1', '2', '3', '4', '5']
 
+// iit/iib/ice/msb + 202X + XXX, for example iit2024123@iiita.ac.in
+const STUDENT_EMAIL_PATTERN = /^(iit|iib|ice|msb)202\d{4}@iiita\.ac\.in$/
+
+const ADMIN_EMAILS = [
+  'tarang@iiita.ac.in',
+  'dhairya@iiita.ac.in',
+  'lakshya@iiita.ac.in',
+]
+
 const SELLER_PUBLIC_FIELDS = 'name college department year profilePicture isVerified ratingAverage ratingCount completedTransactions'
 
 module.exports = {
@@ -58,6 +68,7 @@ module.exports = {
   PRODUCT_CONDITIONS,
   SERVICE_CATEGORIES,
   PRODUCT_STATUSES,
+  COLLEGE_NAME,
   ORDER_STATUSES,
   AUCTION_STATUSES,
   SERVICE_REQUEST_STATUSES,
@@ -69,4 +80,6 @@ module.exports = {
   REPORT_TARGETS,
   YEARS,
   SELLER_PUBLIC_FIELDS,
+  STUDENT_EMAIL_PATTERN,
+  ADMIN_EMAILS,
 }

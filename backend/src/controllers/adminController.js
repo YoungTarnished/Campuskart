@@ -72,6 +72,33 @@ const setSuspension = asyncHandler(async (req, res) => {
   })
 })
 
+const listings = asyncHandler(async (req, res) => {
+  const filter = req.query.status
+    ? { status: req.query.status }
+    : { status: { $in: ['pending', 'available'] } }
+  const data = await Product.find(filter)
+    .sort({ createdAt: -1 })
+    .limit(50)
+    .populate('seller', 'name email')
+  res.json({ success: true, data })
+})
+
+const approveProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id)
+  if (!product || product.status === 'removed') throw new ApiError('Listing not found', 404)
+  if (product.status !== 'pending') throw new ApiError('Only a listing waiting for review can be approved', 400)
+  product.status = 'available'
+  await product.save()
+  await notify({
+    user: product.seller,
+    type: 'report_update',
+    title: 'Listing approved',
+    body: `${product.title} is now visible to other students.`,
+    link: `/products/${product._id}`,
+  })
+  res.json({ success: true, message: 'Listing approved', data: product })
+})
+
 const removeProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id)
   if (!product) throw new ApiError('Product not found', 404)
@@ -89,6 +116,13 @@ const removeProduct = asyncHandler(async (req, res) => {
   }
   product.status = 'removed'
   await product.save()
+  await notify({
+    user: product.seller,
+    type: 'report_update',
+    title: 'Listing removed',
+    body: `An administrator removed ${product.title}.`,
+    link: '/listings',
+  })
   res.json({ success: true, message: 'Listing removed' })
 })
 
@@ -161,6 +195,6 @@ const resolveDispute = asyncHandler(async (req, res) => {
 })
 
 module.exports = {
-  stats, users, setSuspension, removeProduct, removeService, removeAuction,
+  stats, users, setSuspension, listings, approveProduct, removeProduct, removeService, removeAuction,
   reports, resolveReport, disputes, resolveDispute,
 }

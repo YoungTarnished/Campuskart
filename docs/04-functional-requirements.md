@@ -3,7 +3,7 @@
 | ID | Requirement |
 | --- | --- |
 | FR-1 | A student can register with name, college email, password, college, department, and year. |
-| FR-2 | Registration rejects non-academic emails and weak passwords. |
+| FR-2 | Registration accepts only IIITA roll emails (`iit`, `iib`, `ice`, or `msb`, then `202`, one digit, and three digits) and rejects weak passwords. The three administrator addresses cannot be registered as students. |
 | FR-3 | The client cannot choose the role or verification flag. |
 | FR-4 | A demo verification token is returned only outside production. |
 | FR-5 | Unverified students cannot publish products, services, bids, or transactions. |

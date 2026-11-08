@@ -106,7 +106,7 @@ router.post('/disputes', protect, validate(schemas.disputeSchema), reports.creat
 router.get('/disputes', protect, reports.myDisputes)
 
 router.get('/dashboard', protect, users.dashboard)
-router.get('/users/:id', validate(schemas.idParams), users.publicProfile)
+router.get('/users/:id', optionalAuth, validate(schemas.idParams), users.publicProfile)
 
 router.get('/uploads/storage', uploads.storage)
 router.post('/uploads', protect, upload.array('images', 5), uploads.uploadImages)
@@ -114,6 +114,8 @@ router.post('/uploads', protect, upload.array('images', 5), uploads.uploadImages
 router.get('/admin/stats', ...adminOnly, admin.stats)
 router.get('/admin/users', ...adminOnly, admin.users)
 router.patch('/admin/users/:id', ...adminOnly, validate(schemas.adminUserSchema), admin.setSuspension)
+router.get('/admin/products', ...adminOnly, admin.listings)
+router.patch('/admin/products/:id/approve', ...adminOnly, validate(schemas.idParams), admin.approveProduct)
 router.patch('/admin/products/:id/remove', ...adminOnly, validate(schemas.idParams), admin.removeProduct)
 router.patch('/admin/services/:id/remove', ...adminOnly, validate(schemas.idParams), admin.removeService)
 router.patch('/admin/auctions/:id/remove', ...adminOnly, validate(schemas.idParams), admin.removeAuction)
